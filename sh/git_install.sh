@@ -1,7 +1,6 @@
 #!/bin/bash
 
 pkg_name="git"
-repo_url="http://github.com/Beellzebub/multi_tierApp"
 
 function git_install {
   if ! dpkg -s "$1" &> /dev/null ; then
@@ -15,9 +14,5 @@ function git_install {
   fi
 }
 
-function git_clone {
-    git clone "$1"
-}
-
 git_install $pkg_name
-git_clone $repo_url
+
