@@ -1,6 +1,7 @@
 #!/bin/bash
 
-pkg_name="docker-ce"
+docker_pkg="docker-ce"
+compose_pkg="docker-compose"
 key_url="https://download.docker.com/linux/ubuntu/gpg"
 repo_url="https://download.docker.com/linux/ubuntu"
 
@@ -20,5 +21,9 @@ function docker_install {
   fi
 }
 
-docker_install $pkg_name $key_url $repo_url
+function compose_install {
+  sudo apt-get install "$1"
+}
 
+docker_install $docker_pkg $key_url $repo_url
+compose_install $compose_pkg

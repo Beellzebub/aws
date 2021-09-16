@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pkg_name="git"
+git_pkg="git"
 
 function git_install {
   if ! dpkg -s "$1" &> /dev/null ; then
@@ -14,5 +14,5 @@ function git_install {
   fi
 }
 
-git_install $pkg_name
+git_install $git_pkg
 
