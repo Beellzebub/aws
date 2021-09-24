@@ -10,6 +10,7 @@ sudo systemctl start fail2ban
 
 #sshd config for amzn
 sed -i 's/#PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
+sudo systemctl restart sshd
 
 sudo adduser tutor-a
 sudo usermod -aG wheel tutor-a
