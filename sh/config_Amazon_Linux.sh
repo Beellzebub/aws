@@ -9,8 +9,13 @@ sudo systemctl enable fail2ban
 sudo systemctl start fail2ban
 
 #sshd config for amzn
-sed -i 's/#PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config
+sed -i "s/$(grep -m 1 "PermitRootLogin" /etc/ssh/sshd_config)/PermitRootLogin no/" /etc/ssh/sshd_config
+sed -i "s/$(grep -m 1 "PasswordAuthentication" /etc/ssh/sshd_config)/PasswordAuthentication no/" /etc/ssh/sshd_config
 sudo systemctl restart sshd
+
+#sudoers config for amzn
+sudo sed -i "s/$(sudo grep "# %wheel" /etc/sudoers)/%wheel ALL=(ALL) NOPASSWD: ALL/" /etc/sudoers
+sudo sed -i "s/$(sudo grep -m 1 "%wheel" /etc/sudoers)/# %wheel ALL=(ALL) ALL/" /etc/sudoers
 
 sudo adduser tutor-a
 sudo usermod -aG wheel tutor-a

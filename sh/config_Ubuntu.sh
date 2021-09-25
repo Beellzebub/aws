@@ -5,8 +5,12 @@ sudo apt-get install fail2ban -y
 sudo apt-get install git
 
 #sshd config for ubuntu
-sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config
+sed -i "s/$(grep -m 1 "PermitRootLogin" /etc/ssh/sshd_config)/PermitRootLogin no/" /etc/ssh/sshd_config
+sed -i "s/$(grep -m 1 "PasswordAuthentication" /etc/ssh/sshd_config)/PasswordAuthentication no/" /etc/ssh/sshd_config
 sudo systemctl restart sshd
+
+#sudoers config for ubuntu
+sudo sed -i "s/$(sudo grep "%sudo" /etc/sudoers)/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/" /etc/sudoers
 
 sudo adduser tutor-a
 sudo usermod -aG sudo tutor-a
