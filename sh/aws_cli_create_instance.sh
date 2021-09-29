@@ -20,6 +20,7 @@ subnet_id=$(aws ec2 describe-subnets \
 --output text)
 echo "Subnet ID: $subnet_id"
 
+# Replace path in user-data before run.
 aws ec2 run-instances \
 --image-id ami-05f7491af5eef733a \
 --count 1 \
