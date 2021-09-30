@@ -1,13 +1,13 @@
 provider "aws" {
-  region = "eu-central-1"
+  region = var.aws-region
 }
 
 resource "aws_instance" "ubuntu-ud1" {
   count                  = 1
   ami                    = "ami-05f7491af5eef733a"
   instance_type          = "t3.micro"
-  key-name               = "student-ed25519"
-  vpc_security-group-ids = [aws_security_group.public-ssh-http-81.id]
+  key-name               = var.aws-key-name
+  vpc_security-group-ids = "sg-085c6e5baeb1a2886"
   subnet-id              = "subnet-0e205b907d94d99be"
   user_data              = <<EOF
 #!/bin/bash
@@ -44,27 +44,5 @@ sudo systemctl restart nginx
 EOF
     tags = {
     Name = "ubuntu-ud1"
-  }
-}
-
-resource "aws_security_group" "public-ssh-http-81" {
-  name        = "public-ssh-http-81"
-
-  ingress = {
-      from_port        = 80
-      to_port          = 80
-      protocol         = "tcp"
-      cidr_blocks      = ["0.0.0.0/0"]
-    }
-
-  egress = {
-      from_port        = 0
-      to_port          = 0
-      protocol         = "-1"
-      cidr_blocks      = ["0.0.0.0/0"]
-    }
-
-  tags = {
-    Name = "public-ssh-http-81"
   }
 }
