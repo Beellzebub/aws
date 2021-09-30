@@ -6,9 +6,9 @@ resource "aws_instance" "ubuntu-ud1" {
   count                  = 1
   ami                    = "ami-05f7491af5eef733a"
   instance_type          = "t3.micro"
-  key-name               = var.aws-key-name
-  vpc_security-group-ids = "sg-085c6e5baeb1a2886"
-  subnet-id              = "subnet-0e205b907d94d99be"
+  key_name               = var.aws-key-name
+  vpc_security_group_ids = ["sg-085c6e5baeb1a2886"]
+  subnet_id              = "subnet-0e205b907d94d99be"
   user_data              = <<EOF
 #!/bin/bash
 sudo apt-get update -y
