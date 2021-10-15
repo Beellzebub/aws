@@ -12,7 +12,7 @@ sudo systemctl restart sshd
 #sudoers config for ubuntu
 sudo sed -i "s/$(sudo grep "%sudo" /etc/sudoers)/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/" /etc/sudoers
 
-sudo adduser tutor-a
+sudo adduser tutor-a --disabled-password --gecos ""
 sudo usermod -aG sudo tutor-a
 sudo mkdir /home/tutor-a/.ssh
 sudo touch /home/tutor-a/.ssh/authorized_keys

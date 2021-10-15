@@ -7,6 +7,10 @@ sudo systemctl enable nginx
 sudo systemctl start nginx
 sudo systemctl enable fail2ban
 sudo systemctl start fail2ban
+sudo systemctl enable firewalld
+
+sudo firewall-cmd --zone+public --add-service=http --permanent
+sudo firewall-cmd --reload
 
 #sshd config for amzn
 sed -i "s/$(grep -m 1 "PermitRootLogin" /etc/ssh/sshd_config)/PermitRootLogin no/" /etc/ssh/sshd_config
@@ -17,7 +21,7 @@ sudo systemctl restart sshd
 sudo sed -i "s/$(sudo grep "# %wheel" /etc/sudoers)/%wheel ALL=(ALL) NOPASSWD: ALL/" /etc/sudoers
 sudo sed -i "s/$(sudo grep -m 1 "%wheel" /etc/sudoers)/# %wheel ALL=(ALL) ALL/" /etc/sudoers
 
-sudo adduser tutor-a
+sudo adduser tutor-a --disabled-password --gecos ""
 sudo usermod -aG wheel tutor-a
 sudo mkdir /home/tutor-a/.ssh
 sudo touch /home/tutor-a/.ssh/authorized_keys
