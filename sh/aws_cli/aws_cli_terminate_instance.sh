@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Terminate instance:
 
 instance_id=$(aws ec2 describe-instances \
