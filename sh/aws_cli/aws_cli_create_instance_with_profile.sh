@@ -4,8 +4,9 @@
 
 security_group="public-ssh-http-81"
 key_pair="student-ed25519"
-user_data="config_ubuntu.sh"
-instance_name="ubuntu-ud1"
+instance_profile="EC2toS3FullAccessProfile"
+user_data="config_ubuntu_with_s3.sh"
+instance_name="ubuntu-ud2"
 os_release="ubuntu" # ubuntu or amzn
 
 if [[ $os_release == "ubuntu" ]] ; then
@@ -41,5 +42,6 @@ aws ec2 run-instances \
 --key-name "$key_pair" \
 --security-group-ids "$sg_id" \
 --subnet-id "$subnet_id" \
+--iam-instance-profile Name="$instance_profile" \
 --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$instance_name}]" \
 --user-data "file://./$user_data"
