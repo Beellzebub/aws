@@ -11,8 +11,8 @@ sudo ./aws/install
 rm -r aws
 rm awscliv2.zip
 
-account_id=$(aws sts get-caller-identity --query Account --output text)
-bucket_name="cec-$account_id-j2"
+bucket_date_and_name=$(aws s3 ls)
+bucket_name=$(echo "$bucket_date_and_name" | sed -r 's/[0-9]+-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ //')
 
 aws s3 cp "s3://$bucket_name/user-data/config_ubuntu.sh" ./
 
