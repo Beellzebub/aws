@@ -3,6 +3,7 @@ sudo yum update -y
 sudo amazon-linux-extras install epel -y
 sudo yum install nginx -y
 sudo yum install fail2ban -y
+sudo yum install git -y
 sudo systemctl enable nginx
 sudo systemctl start nginx
 sudo systemctl enable fail2ban
@@ -32,10 +33,10 @@ sudo chmod 600 /home/tutor-a/.ssh/authorized_keys
 sudo chown -R tutor-a:tutor-a /home/tutor-a/.ssh
 
 repo_url="http://github.com/Beellzebub/page"
-project_src="/home/ubuntu/project_src"
+project_src="/home/ec2-user/project_src"
 
-git clone "$repo_url" "$project_src"
-sudo mkdir /var/www/tutorial
+sudo git clone "$repo_url" "$project_src"
+sudo mkdir -p /var/www/tutorial
 sudo cp "$project_src/html/index.html" "/var/www/tutorial/"
-sudo cp "$project_src/nginx/new_config" "/etc/nginx/sites-enabled/"
+sudo cp "$project_src/nginx/new_config" "/etc/nginx/conf.d/new.conf"
 sudo systemctl restart nginx

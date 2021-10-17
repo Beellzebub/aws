@@ -24,7 +24,7 @@ sudo chown -R tutor-a:tutor-a /home/tutor-a/.ssh
 repo_url="http://github.com/Beellzebub/page"
 project_src="/home/ubuntu/project_src"
 
-git clone "$repo_url" "$project_src"
+sudo git clone "$repo_url" "$project_src"
 sudo mkdir /var/www/tutorial
 sudo cp "$project_src/html/index.html" "/var/www/tutorial/"
 sudo cp "$project_src/nginx/new_config" "/etc/nginx/sites-enabled/"
