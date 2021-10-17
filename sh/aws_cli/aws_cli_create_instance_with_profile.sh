@@ -10,9 +10,9 @@ instance_name="ubuntu-ud2"
 os_release="ubuntu" # ubuntu or amzn
 
 if [[ $os_release == "ubuntu" ]] ; then
-  ami="ami-058e6df85cfc7760b"
-elif [[ $os_release == "amzn" ]] ; then
   ami="ami-05f7491af5eef733a"
+elif [[ $os_release == "amzn" ]] ; then
+  ami="ami-07df274a488ca9195"
 fi
 
 # Start instance:
