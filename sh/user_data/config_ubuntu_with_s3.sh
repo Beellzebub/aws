@@ -12,9 +12,9 @@ rm -r aws
 rm awscliv2.zip
 
 bucket_date_and_name=$(aws s3 ls)
-bucket_name=$(echo "$bucket_date_and_name" | sed -r 's/[0-9]+-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ //')
+bucket_name=$(echo "$bucket_date_and_name" | cut -d" " -f3)
 
 aws s3 cp "s3://$bucket_name/user-data/config_ubuntu.sh" ./
 
-chmod +x config_ubuntu.sh
+chmod +x ./config_ubuntu.sh
 sudo ./config_ubuntu.sh
