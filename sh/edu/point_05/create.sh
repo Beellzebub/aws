@@ -4,7 +4,7 @@
 
 # - function parameters
 amzn_platform_name="Amazon Linux"
-amzn_instance_name="al2-ud4"
+amzn_instance_name="al2-ud5"
 ubuntu_platform_name="Ubuntu"
 ubuntu_instance_name="ubuntu-ud5"
 
