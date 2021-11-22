@@ -59,16 +59,13 @@ instance_ids="$(curl http://169.254.169.254/latest/meta-data/instance-id)"
 instance_name="$(aws ec2 describe-instances \
 --instance-ids "$instance_ids" \
 --query "Reservations[].Instances[].Tags[?Key=='Name'].Value" \
---output text)"
+--output text \
+--region eu-central-1)"
 
 hostnamectl set-hostname "$instance_name.al2-instance.ddns.net"
 
 yum install noip -y
-
-touch /etc/no-ip2.conf
-echo "0.0.0.0�+L2JAteth0dXNlcm5hbWU9ZW5pdW1pZyU0MGdtYWlsLmNvbSZwYXNzPUhwdyUzZm4lMmIlMjUlM2E3YyUyYylBdiEmaFtdPWFsMi1pbnN0YW5jZS5kZG5zLm5ldA==" >> /etc/no-ip2.conf
-chmod 600 /etc/no-ip2.conf
-chown -R root:root /etc/no-ip2.conf
+noip2 -C
 
 systemctl enable noip.service
 systemctl start noip.service

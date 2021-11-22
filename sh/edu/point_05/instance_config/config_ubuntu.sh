@@ -36,10 +36,7 @@ instance_ids="$(curl http://169.254.169.254/latest/meta-data/instance-id)"
 instance_name="$(aws ec2 describe-instances \
 --instance-ids "$instance_ids" \
 --query "Reservations[].Instances[].Tags[?Key=='Name'].Value" \
---output text)"
+--output text \
+--region eu-central-1)"
 
 hostnamectl set-hostname "$instance_name.ubuntu-instance.ddns.net"
-
-cat >> /etc/no-ip2.conf << EOF
-0.0.0.0�,L2JAxeth0dXNlcm5hbWU9ZW5pdW1pZyU0MGdtYWlsLmNvbSZwYXNzPUhwdyUzZm4lMmIlMjUlM2E3YyUyYylBdiEmaFtdPXVidW50dS1pbnN0YW5jZS5kZG5zLm5ldA==
-EOF
