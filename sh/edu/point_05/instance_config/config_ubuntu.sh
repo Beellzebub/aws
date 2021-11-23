@@ -40,3 +40,16 @@ instance_name="$(aws ec2 describe-instances \
 --region eu-central-1)"
 
 hostnamectl set-hostname "$instance_name.ubuntu-instance.ddns.net"
+
+wget http://www.noip.com/client/linux/noip-duc-linux.tar.gz
+tar xf noip-duc-linux.tar.gz
+cd noip-2.1.9-1/ || exit
+make install
+cd .. || exit
+
+bucket_date_and_name=$(aws s3 ls)
+bucket_name=$(echo "$bucket_date_and_name" | cut -d" " -f3)
+aws s3 cp "s3://$bucket_name/noip_config/noip_ubuntu.conf" /etc/no-ip2.conf
+
+systemctl enable noip.service
+systemctl start noip.service

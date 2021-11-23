@@ -65,7 +65,10 @@ instance_name="$(aws ec2 describe-instances \
 hostnamectl set-hostname "$instance_name.al2-instance.ddns.net"
 
 yum install noip -y
-noip2 -C
+
+bucket_date_and_name=$(aws s3 ls)
+bucket_name=$(echo "$bucket_date_and_name" | cut -d" " -f3)
+aws s3 cp "s3://$bucket_name/noip_config/noip_amazon_linux.conf" /etc/no-ip2.conf
 
 systemctl enable noip.service
 systemctl start noip.service
