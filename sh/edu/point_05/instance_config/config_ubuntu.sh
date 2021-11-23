@@ -4,6 +4,7 @@ apt-get update -y
 apt-get install nginx -y
 apt-get install fail2ban -y
 apt-get install git -y
+apt-get install make -y
 
 #sshd config for ubuntu
 sed -i "s/$(grep -m 1 "PermitRootLogin" /etc/ssh/sshd_config)/PermitRootLogin no/" /etc/ssh/sshd_config
