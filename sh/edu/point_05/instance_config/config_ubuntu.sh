@@ -5,6 +5,7 @@ apt-get install nginx -y
 apt-get install fail2ban -y
 apt-get install git -y
 apt-get install make -y
+apt-get install gcc -y
 
 #sshd config for ubuntu
 sed -i "s/$(grep -m 1 "PermitRootLogin" /etc/ssh/sshd_config)/PermitRootLogin no/" /etc/ssh/sshd_config
@@ -45,12 +46,30 @@ hostnamectl set-hostname "$instance_name.ubuntu-instance.ddns.net"
 wget http://www.noip.com/client/linux/noip-duc-linux.tar.gz
 tar xf noip-duc-linux.tar.gz
 cd noip-2.1.9-1/ || exit
+sed -i "/no-ip2.conf/d" ./Makefile
 make install
 cd .. || exit
 
 bucket_date_and_name=$(aws s3 ls)
 bucket_name=$(echo "$bucket_date_and_name" | cut -d" " -f3)
-aws s3 cp "s3://$bucket_name/noip_config/noip_ubuntu.conf" /etc/no-ip2.conf
+aws s3 cp "s3://$bucket_name/noip_config/noip_ubuntu.conf" /usr/local/etc/no-ip2.conf
+
+cat >> /etc/systemd/system/noip.service << EOF
+[Unit]
+Description=No-IP Dynamic DNS Update Client
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=forking
+TimeoutStartSec=30
+ExecStart=/usr/local/bin/noip2 -c /usr/local/etc/no-ip2.conf
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
+EOF
 
 systemctl enable noip.service
 systemctl start noip.service
