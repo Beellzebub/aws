@@ -1,0 +1,8 @@
+{
+  "Version": "2012-10-17",
+  "Statement": {
+    "Effect": "Allow",
+    "Action": "sts:AssumeRole",
+    "Resource": "arn:aws:iam::272304640086:role/CloudEngJ2Ch06UpdateDNSZone327742888260"
+  }
+}
