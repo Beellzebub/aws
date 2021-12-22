@@ -66,7 +66,10 @@ instance_name="$(aws ec2 describe-instances \
 
 account_id=$(aws sts get-caller-identity --query Account --output text)
 
-hostnamectl set-hostname "$instance_name.$account_id.cirruscloud.click"
+DNS_zone="$account_id.cirruscloud.click."
+DNS="$instance_name.$DNS_zone"
+
+hostnamectl set-hostname "$DNS"
 
 aws sts assume-role \
 --role-arn "arn:aws:iam::272304640086:role/CloudEngJ2Ch06UpdateDNSZone327742888260" \
@@ -85,7 +88,7 @@ export AWS_SESSION_TOKEN="$session_token"
 rm ./temp.json
 
 zone_id="$(aws route53 list-hosted-zones \
---query "HostedZones[?Name=='$account_id.cirruscloud.click.'].Id" \
+--query "HostedZones[?Name=='$DNS_zone'].Id" \
 --output text)"
 
 cat >> ./temp.json << EOF
@@ -93,7 +96,7 @@ cat >> ./temp.json << EOF
     "Changes": [{
         "Action": "UPSERT",
         "ResourceRecordSet": {
-            "Name": "$account_id.cirruscloud.click.",
+            "Name": "$DNS",
             "Type": "A",
             "TTL": 300,
             "ResourceRecords": [{ "Value": "$public_ipv4"}]
