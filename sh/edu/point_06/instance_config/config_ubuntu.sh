@@ -33,7 +33,6 @@ cp "$project_src/nginx/new_config" "/etc/nginx/sites-enabled/"
 systemctl restart nginx
 
 instance_ids="$(curl http://169.254.169.254/latest/meta-data/instance-id)"
-public_ipv4="$(curl http://169.254.169.254/latest/meta-data/public-ipv4)"
 
 instance_name="$(aws ec2 describe-instances \
 --instance-ids "$instance_ids" \
@@ -48,42 +47,26 @@ DNS="$instance_name.$DNS_zone"
 
 hostnamectl set-hostname "$DNS"
 
-aws sts assume-role \
---role-arn "arn:aws:iam::272304640086:role/CloudEngJ2Ch06UpdateDNSZone327742888260" \
---role-session-name "Route53" \
---query "Credentials" \
---output json > ./temp.json
+bucket_date_and_name=$(aws s3 ls)
+bucket_name=$(echo "$bucket_date_and_name" | cut -d" " -f3)
+aws s3 cp "s3://$bucket_name/services/service_route53.sh" /usr/local/bin/service_route53.sh
 
-access_key="$(jq -r '.AccessKeyId' < ./temp.json)"
-secret_access_key="$(jq -r '.SecretAccessKey' < ./temp.json)"
-session_token="$(jq -r '.SessionToken' < ./temp.json)"
+cat >> /etc/systemd/system/route53.service << EOF
+[Unit]
+Description=Route53 Dynamic DNS Update Service
+Wants=network-online.target
+After=network-online.target
 
-export AWS_ACCESS_KEY_ID="$access_key"
-export AWS_SECRET_ACCESS_KEY="$secret_access_key"
-export AWS_SESSION_TOKEN="$session_token"
+[Service]
+Type=forking
+TimeoutStartSec=30
+ExecStart=/usr/local/bin/service_route53.sh
+Restart=on-failure
+RestartSec=30
 
-rm ./temp.json
-
-zone_id="$(aws route53 list-hosted-zones \
---query "HostedZones[?Name=='$DNS_zone'].Id" \
---output text)"
-
-cat >> ./temp.json << EOF
-{
-    "Changes": [{
-        "Action": "UPSERT",
-        "ResourceRecordSet": {
-            "Name": "$DNS",
-            "Type": "A",
-            "TTL": 300,
-            "ResourceRecords": [{ "Value": "$public_ipv4"}]
-            }
-        }]
-}
+[Install]
+WantedBy=multi-user.target
 EOF
 
-aws route53 change-resource-record-sets \
---hosted-zone "$zone_id" \
---change-batch file://./temp.json
-
-rm ./temp.json
+systemctl enable route53.service
+systemctl start route53.service
