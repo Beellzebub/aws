@@ -73,6 +73,7 @@ hostnamectl set-hostname "$DNS"
 bucket_date_and_name=$(aws s3 ls)
 bucket_name=$(echo "$bucket_date_and_name" | cut -d" " -f3)
 aws s3 cp "s3://$bucket_name/services/service_route53.sh" /usr/local/bin/service_route53.sh
+chmod +x /usr/local/bin/service_route53.sh
 
 cat >> /etc/systemd/system/route53.service << EOF
 [Unit]

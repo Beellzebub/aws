@@ -50,6 +50,6 @@ EOF
 
 aws route53 change-resource-record-sets \
 --hosted-zone "$zone_id" \
---change-batch file://./temp.json
+--change-batch file://./temp.json > /dev/null
 
 rm ./temp.json
