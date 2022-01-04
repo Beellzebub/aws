@@ -2,9 +2,19 @@
 
 arr="$(cat regions-allowed.conf)"
 
-IFS=$'\n'
 for region in $arr; do
-echo "$region"
-is_default_VPC="$(aws ec2 describe-vpcs --query "Vpcs[].IsDefault" --output text --region "$region")"
-echo "$is_default_VPC"
+  echo "$region"
+
+  status_of_default_VPC="$(aws ec2 describe-vpcs \
+  --filters "Name=isDefault, Values=true" \
+  --query "Vpcs[*].IsDefault" \
+  --output text \
+  --region "$region")"
+
+  if [[ -z "$status_of_default_VPC" ]]; then
+    echo "False"
+  else
+    echo "True"
+  fi
+
 done
