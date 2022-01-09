@@ -88,6 +88,20 @@ function key {
 	--output text)"
 
 	if [[ -z "$select_key" ]]; then
+	  file_with_keys="$HOME/.ssh/id_student_$3"
+
+	  if [[ ! -e "$file_with_keys" ]]; then
+	    touch "$file_with_keys"
+	    chmod 600 "$file_with_keys"
+	    echo "File $file_with_keys created."
+	  fi
+
+    aws ec2 create-key-pair \
+    --key-name "$2" \
+    --key-type "$3" \
+    --query "KeyMaterial" \
+    --region "$1" \
+    --output text >> "$file_with_keys"
 	  echo "Key $2 created."
 	else
 		echo "Key $2 exists."
