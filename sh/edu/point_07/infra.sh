@@ -71,7 +71,7 @@ function check_create_security_group {
       --region "$1"
     done
 	else
-		echo "Group $2 exists."
+		echo "Security group $2 exists."
   fi
 }
 
@@ -99,9 +99,20 @@ function check_copy_secret_key {
   fi
 }
 
-arr="$(cat regions-allowed.conf)"
+# Validation of regions-allowed.conf:
+if [[ -e regions-allowed.conf ]]; then
+  list_of_region="$(cat regions-allowed.conf)"
+  if [[ -z "$list_of_region" ]]; then
+    echo "File regions-allowed.conf don't contain regions."
+    exit
+  fi
+else
+  echo "File regions-allowed.conf not found."
+  exit
+fi
 
-for region in $arr; do
+# Create infrastructure:
+for region in $list_of_region; do
   echo "-------------------------"
   echo "Region: $region"
   check_create_vpc "$region"
