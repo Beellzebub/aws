@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # $1-region
-function vpc {
+function check_create_vpc {
   status_of_default_VPC="$(aws ec2 describe-vpcs \
   --filters "Name=isDefault, Values=true" \
   --query "Vpcs[].IsDefault" \
@@ -17,7 +17,7 @@ function vpc {
 }
 
 # $1-region
-function subnet {
+function check_create_subnet {
   availability_zones="$(aws ec2 describe-availability-zones \
   --query "AvailabilityZones[].ZoneName" \
   --output text \
@@ -31,13 +31,11 @@ function subnet {
 
   for zone in $availability_zones; do
     default_subnet="False"
-
     for subnet in $subnets; do
       if [[ "$zone" == "$subnet" ]]; then
         default_subnet="True"
       fi
     done
-
     if [[ "$default_subnet" == "True" ]]; then
       echo "Default subnet in $zone zone exists."
     else
@@ -49,7 +47,7 @@ function subnet {
 }
 
 # $1-region $2-group name $3-list of ports
-function security {
+function check_create_security_group {
 	select_group="$(aws ec2 describe-security-groups \
 	--filters "Name=group-name, Values=$2" \
 	--query "SecurityGroups[].GroupName" \
@@ -57,7 +55,6 @@ function security {
 	--output text)"
 
 	if [[ -z "$select_group" ]]; then
-
 	  group_id="$(aws ec2 create-security-group \
 	  --description "$2" \
 	  --group-name "$2" \
@@ -65,7 +62,6 @@ function security {
 	  --region "$1" \
 	  --output text)"
 	  echo "Group $2 created."
-
     for port in $3; do
       aws ec2 authorize-security-group-ingress \
       --group-id "$group_id" \
@@ -80,7 +76,7 @@ function security {
 }
 
 # $1-region $2-key name $3-key type
-function key {
+function check_copy_secret_key {
   select_key="$(aws ec2 describe-key-pairs \
 	--filters "Name=key-name, Values=$2" \
 	--query "KeyPairs[].KeyName" \
@@ -89,20 +85,15 @@ function key {
 
 	if [[ -z "$select_key" ]]; then
 	  file_with_keys="$HOME/.ssh/id_student_$3"
-
-	  if [[ ! -e "$file_with_keys" ]]; then
-	    touch "$file_with_keys"
-	    chmod 600 "$file_with_keys"
-	    echo "File $file_with_keys created."
+	  if [[ -e "$file_with_keys" ]]; then
+      aws ec2 import-key-pair \
+      --key-name "$2" \
+      --region "$1" \
+      --public-key-material fileb://"$file_with_keys"
+      echo "Key $2 copied successfully."
+	  else
+	    echo  "File $file_with_keys not found."
 	  fi
-
-    aws ec2 create-key-pair \
-    --key-name "$2" \
-    --key-type "$3" \
-    --query "KeyMaterial" \
-    --region "$1" \
-    --output text >> "$file_with_keys"
-	  echo "Key $2 created."
 	else
 		echo "Key $2 exists."
   fi
@@ -113,10 +104,10 @@ arr="$(cat regions-allowed.conf)"
 for region in $arr; do
   echo "-------------------------"
   echo "Region: $region"
-  vpc "$region"
-  subnet "$region"
-  security "$region" public-ssh-and-http "22 80"
-  security "$region" public-ssh-http-81 "22 80 81"
-  key "$region" student-ed25519 ed25519
-  key "$region" student-rsa rsa
+  check_create_vpc "$region"
+  check_create_subnet "$region"
+  check_create_security_group "$region" public-ssh-and-http "22 80"
+  check_create_security_group "$region" public-ssh-http-81 "22 80 81"
+  check_copy_secret_key "$region" student-ed25519 ed25519
+  check_copy_secret_key "$region" student-rsa rsa
 done
