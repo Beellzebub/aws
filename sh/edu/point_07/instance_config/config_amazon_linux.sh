@@ -56,10 +56,12 @@ cp "$project_src/nginx/new_config" "/etc/nginx/conf.d/new.conf"
 systemctl restart nginx
 
 instance_ids="$(curl http://169.254.169.254/latest/meta-data/instance-id)"
+region="$(curl http://169.254.169.254/latest/meta-data/placement/region)"
 
 instance_name="$(aws ec2 describe-instances \
 --instance-ids "$instance_ids" \
 --query "Reservations[].Instances[].Tags[?Key=='Name'].Value" \
+--region "$region" \
 --output text)"
 
 account_id=$(aws sts get-caller-identity --query Account --output text)
